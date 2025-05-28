@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro Gerontológico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body style="background-color: #f1dc52; color: #21251c;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Centro Gerontológico</a>
+            <div class="dropdown d-inline ms-2">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Opciones
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#inicio">Inicio</a></li>
+                    <li><a class="dropdown-item" href="#servicios">Servicios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Registro de Citas</a></li>
+                </ul>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link active" href="#inicio">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Index.html">Iniciar Sesión</a></li>
+                </ul>
+                <form class="d-flex ms-auto">
+                    <input class="form-control me-2" type="search" placeholder="Buscar">
+                    <button class="btn btn-outline-light" type="submit">Buscar</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <section id="inicio" class="hero text-center py-5">
+        <h1 style="color: black;">Bienvenido a Corazones Dorados</h1>
+        <p style="color: black;">Brindamos cuidado y atención especializada para adultos mayores.</p>
+    </section>
+    <section id="historias-medicas" class="container py-5">
+        <h2 class="text-center">Información médica</h2>
+        <form id="historia-form" class="mb-4">
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Título:</label>
+                <input type="text" class="form-control" id="titulo" required>
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción:</label>
+                <textarea class="form-control" id="descripcion" rows="4" required></textarea>
+            </div>
+            <button type="button" class="btn btn-success" onclick="agregarHistoria()">Guardar Historia</button>
+        </form>
+        <h3>Información Guardada</h3>
+        <ul id="lista-historias" class="list-group"></ul>
+    </section>
+    <footer class="text-center py-3">
+        <p>&copy; 2023 Centro Gerontológico. Todos los derechos reservados.</p>
+    </footer>
+    <script>
+        const listaHistorias = document.getElementById('lista-historias');
+        function agregarHistoria() {
+            const titulo = document.getElementById('titulo').value;
+            const descripcion = document.getElementById('descripcion').value;
+            if (titulo && descripcion) {
+                const historiaItem = document.createElement('li');
+                historiaItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                historiaItem.innerHTML = `<div><strong>${titulo}</strong><p>${descripcion}</p></div><button class="btn btn-danger btn-sm" onclick="eliminarHistoria(this)">Eliminar</button>`;
+                listaHistorias.appendChild(historiaItem);
+                document.getElementById('historia-form').reset();
+            } else {
+                alert('Por favor, completa todos los campos.');
+            }
+        }
+        function eliminarHistoria(button) {
+            const historiaItem = button.parentElement;
+            listaHistorias.removeChild(historiaItem);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
