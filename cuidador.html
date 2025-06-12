@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel del Cuidador</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e5c244;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .patient {
+      border-top: 1px solid #ccc;
+      margin-top: 20px;
+      padding-top: 10px;
+    }
+
+    .note {
+      background-color: #f9f9f9;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .note-buttons {
+      margin-top: 5px;
+      text-align: right;
+    }
+
+    .note-buttons button {
+      margin-left: 5px;
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+
+    .edit-area {
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Panel del Cuidador</h2>
+
+    <div class="form-group">
+      <label for="patientName">Nombre del paciente:</label>
+      <input type="text" id="patientName" required>
+    </div>
+
+    <div class="form-group">
+      <label for="annotation">Anotación:</label>
+      <textarea id="annotation" rows="4" required></textarea>
+    </div>
+
+    <button onclick="addAnnotation()">Guardar Anotación</button>
+
+    <div id="patientsList"></div>
+  </div>
+
+  <script>
+    let editingPatient = null;
+    let editingIndex = null;
+
+    window.onload = loadPatients;
+
+    function addAnnotation() {
+      const name = document.getElementById("patientName").value.trim();
+      const note = document.getElementById("annotation").value.trim();
+
+      if (!name || !note) {
+        alert("Por favor completa ambos campos.");
+        return;
+      }
+
+      let patients = JSON.parse(localStorage.getItem("patientsData")) || {};
+
+      if (!patients[name]) {
+        patients[name] = [];
+      }
+
+      if (editingPatient !== null && editingIndex !== null) {
+        patients[editingPatient][editingIndex] = note;
+        editingPatient = null;
+        editingIndex = null;
+      } else {
+        patients[name].push(note);
+      }
+
+      localStorage.setItem("patientsData", JSON.stringify(patients));
+      document.getElementById("annotation").value = "";
+      loadPatients();
+    }
+
+    function loadPatients() {
+      const patients = JSON.parse(localStorage.getItem("patientsData")) || {};
+      const listDiv = document.getElementById("patientsList");
+      listDiv.innerHTML = "";
+
+      for (let name in patients) {
+        const patientDiv = document.createElement("div");
+        patientDiv.className = "patient";
+
+        const title = document.createElement("h4");
+        title.textContent = name;
+        patientDiv.appendChild(title);
+
+        patients[name].forEach((note, index) => {
+          const noteDiv = document.createElement("div");
+          noteDiv.className = "note";
+
+          const noteText = document.createElement("div");
+          noteText.textContent = note;
+          noteDiv.appendChild(noteText);
+
+          const buttonsDiv = document.createElement("div");
+          buttonsDiv.className = "note-buttons";
+
+          const editBtn = document.createElement("button");
+          editBtn.textContent = "Editar";
+          editBtn.onclick = () => editAnnotation(name, index, note);
+          buttonsDiv.appendChild(editBtn);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.textContent = "Eliminar";
+          deleteBtn.onclick = () => deleteAnnotation(name, index);
+          buttonsDiv.appendChild(deleteBtn);
+
+          noteDiv.appendChild(buttonsDiv);
+          patientDiv.appendChild(noteDiv);
+        });
+
+        listDiv.appendChild(patientDiv);
+      }
+    }
+
+    function deleteAnnotation(name, index) {
+      const patients = JSON.parse(localStorage.getItem("patientsData")) || {};
+      if (patients[name]) {
+        patients[name].splice(index, 1);
+        if (patients[name].length === 0) {
+          delete patients[name];
+        }
+        localStorage.setItem("patientsData", JSON.stringify(patients));
+        loadPatients();
+      }
+    }
+
+    function editAnnotation(name, index, note) {
+      document.getElementById("patientName").value = name;
+      document.getElementById("annotation").value = note;
+      editingPatient = name;
+      editingIndex = index;
+    }
+  </script>
+</body>
+</html>
